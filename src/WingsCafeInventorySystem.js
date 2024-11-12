@@ -64,6 +64,36 @@ const WingsCafeInventorySystem = () => {
         }
     };
 
+    // Add stock function
+    const addStock = (index) => {
+        const additionalStock = parseInt(prompt("Enter the amount of stock to add:"), 10);
+        if (!isNaN(additionalStock) && additionalStock > 0) {
+            const updatedProducts = [...products];
+            updatedProducts[index].quantity += additionalStock;
+            setProducts(updatedProducts);
+        } else {
+            alert("Please enter a valid number greater than 0.");
+        }
+    };
+
+    // Update stock function
+    const updateStock = (index) => {
+        const newQuantity = parseInt(prompt("Enter the new stock quantity:"), 10);
+        if (!isNaN(newQuantity) && newQuantity >= 0) {
+            const updatedProducts = [...products];
+            updatedProducts[index].quantity = newQuantity;
+            setProducts(updatedProducts);
+        } else {
+            alert("Please enter a valid number.");
+        }
+    };
+
+    // Delete product function
+    const deleteProduct = (index) => {
+        const updatedProducts = products.filter((_, i) => i !== index);
+        setProducts(updatedProducts);
+    };
+
     if (!isAuthenticated) {
         return (
             <div className="login-container">
@@ -115,8 +145,10 @@ const WingsCafeInventorySystem = () => {
                                 <td>{product.price}</td>
                                 <td>{product.quantity}</td>
                                 <td>
-                                    <button className="action-button add-stock">Add Stock</button>
+                                    <button className="action-button add-stock" onClick={() => addStock(index)}>Add Stock</button>
                                     <button className="action-button reduce-stock" onClick={() => sellStock(index)}>Sell Stock</button>
+                                    <button className="action-button update-stock" onClick={() => updateStock(index)}>Update Stock</button>
+                                    <button className="action-button delete-product" onClick={() => deleteProduct(index)}>Delete Product</button>
                                 </td>
                             </tr>
                         ))}
