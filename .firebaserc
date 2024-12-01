@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "wings-cafe-inventory-f0d71"
-  }
+    "default": "my-wings-4a47d"
+  },
+  "targets": {},
+  "etags": {}
 }

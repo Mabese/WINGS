@@ -7,13 +7,13 @@ import { getFirestore } from 'firebase/firestore';
 // Your Firebase configuration object
 const firebaseConfig = {
   
-  apiKey: "AIzaSyC1OBkeIX4w6Lwg63Eh-uUkcW1RZzc872w",
-  authDomain: "wings-cafe-inventory-f0d71.firebaseapp.com",
-  projectId: "wings-cafe-inventory-f0d71",
-  storageBucket: "wings-cafe-inventory-f0d71.firebasestorage.app",
-  messagingSenderId: "160420697262",
-  appId: "1:160420697262:web:e266a26a5b30997ec3893f",
-  measurementId: "G-CCRB856NS9"
+  apiKey: "AIzaSyCM1JsnypdzJqc4lAawXQfye7-S8wUeRYw",
+  authDomain: "my-wings-4a47d.firebaseapp.com",
+  databaseURL: "https://my-wings-4a47d-default-rtdb.firebaseio.com",
+  projectId: "my-wings-4a47d",
+  storageBucket: "my-wings-4a47d.firebasestorage.app",
+  messagingSenderId: "593549983946",
+  appId: "1:593549983946:web:14b00b700865e436d13433"
 };
 
 // Initialize Firebase

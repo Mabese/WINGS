@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './style.css';
 import { auth, db } from './firebase';
 
@@ -6,23 +6,34 @@ const WingsCafeInventorySystem = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [products, setProducts] = useState([]);
-    const [users, setUsers] = useState([{ username: 'admin', password: 'admin123' }]); // Sample admin user
-    const [loginUsername, setLoginUsername] = useState('');
+    const [users, setUsers] = useState([{ email: 'admin@example.com', password: 'admin123' }]); // Sample admin user
+    const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
     const [price, setPrice] = useState(0);
     const [quantity, setQuantity] = useState(0);
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    // Images for rotation
+    const images = [
+        './Assets/bagger.jpg',
+        './Assets/image2.jpg',
+        './Assets/image3.jpg',
+        './Assets/image4.jpg',
+        './Assets/image5.jpg',
+    ];
+
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     // Login function
     const handleLogin = (e) => {
         e.preventDefault();
         setIsAuthenticated(true);
-        setCurrentUser(loginUsername);
-        setLoginUsername('');
+        setCurrentUser(loginEmail);
+        setLoginEmail('');
         setLoginPassword('');
     };
 
@@ -35,9 +46,9 @@ const WingsCafeInventorySystem = () => {
     // Add a new user
     const addUser = (e) => {
         e.preventDefault();
-        const newUser = { username: username.trim(), password: password.trim() };
+        const newUser = { email: email.trim(), password: password.trim() };
         setUsers([...users, newUser]);
-        setUsername('');
+        setEmail('');
         setPassword('');
     };
 
@@ -55,12 +66,13 @@ const WingsCafeInventorySystem = () => {
 
     // Sell stock function
     const sellStock = (index) => {
-        const updatedProducts = [...products];
-        if (updatedProducts[index].quantity > 0) {
-            updatedProducts[index].quantity -= 1; // Reduce quantity by 1
+        const amountToSell = parseInt(prompt("Enter the amount of stock to sell:"), 10);
+        if (!isNaN(amountToSell) && amountToSell > 0 && amountToSell <= products[index].quantity) {
+            const updatedProducts = [...products];
+            updatedProducts[index].quantity -= amountToSell;
             setProducts(updatedProducts);
         } else {
-            alert("Stock is empty!");
+            alert("Please enter a valid amount within the available stock quantity.");
         }
     };
 
@@ -76,15 +88,17 @@ const WingsCafeInventorySystem = () => {
         }
     };
 
-    // Update stock function
-    const updateStock = (index) => {
+    // Update stock and price function
+    const updateStockAndPrice = (index) => {
         const newQuantity = parseInt(prompt("Enter the new stock quantity:"), 10);
-        if (!isNaN(newQuantity) && newQuantity >= 0) {
+        const newPrice = parseFloat(prompt("Enter the new price:"), 10);
+        if (!isNaN(newQuantity) && newQuantity >= 0 && !isNaN(newPrice) && newPrice >= 0) {
             const updatedProducts = [...products];
             updatedProducts[index].quantity = newQuantity;
+            updatedProducts[index].price = newPrice;
             setProducts(updatedProducts);
         } else {
-            alert("Please enter a valid number.");
+            alert("Please enter valid numbers for quantity and price.");
         }
     };
 
@@ -94,16 +108,42 @@ const WingsCafeInventorySystem = () => {
         setProducts(updatedProducts);
     };
 
+    // Delete user function
+    const deleteUser = (index) => {
+        const updatedUsers = users.filter((_, i) => i !== index);
+        setUsers(updatedUsers);
+    };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+        }, 3000); // Change image every 3 seconds
+
+        return () => clearInterval(interval); // Cleanup on component unmount
+    }, []);
+
     if (!isAuthenticated) {
         return (
             <div className="login-container">
+                {/* Playing Pictures (Shown before login) */}
+                <div className="playing-pictures">
+                    <h2>Enjoy Our Collection</h2>
+                    <div className="image-row">
+                        <img
+                            src={images[currentImageIndex]}
+                            alt={`Playing ${currentImageIndex + 1}`}
+                            className="playing-image"
+                        />
+                    </div>
+                </div>
+
                 <h1>Login to Wings Cafe Inventory System</h1>
                 <form onSubmit={handleLogin}>
-                    <label>Username:</label>
+                    <label>Email:</label>
                     <input
-                        type="text"
-                        value={loginUsername}
-                        onChange={(e) => setLoginUsername(e.target.value)}
+                        type="email"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
                         required
                     />
                     <label>Password:</label>
@@ -147,7 +187,7 @@ const WingsCafeInventorySystem = () => {
                                 <td>
                                     <button className="action-button add-stock" onClick={() => addStock(index)}>Add Stock</button>
                                     <button className="action-button reduce-stock" onClick={() => sellStock(index)}>Sell Stock</button>
-                                    <button className="action-button update-stock" onClick={() => updateStock(index)}>Update Stock</button>
+                                    <button className="action-button update-stock" onClick={() => updateStockAndPrice(index)}>Update Stock & Price</button>
                                     <button className="action-button delete-product" onClick={() => deleteProduct(index)}>Delete Product</button>
                                 </td>
                             </tr>
@@ -203,11 +243,11 @@ const WingsCafeInventorySystem = () => {
             <div className="user-management">
                 <h2>User Management</h2>
                 <form onSubmit={addUser}>
-                    <label>Username:</label>
+                    <label>Email:</label>
                     <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
                     <label>Password:</label>
@@ -222,16 +262,16 @@ const WingsCafeInventorySystem = () => {
                 <table id="userTable">
                     <thead>
                         <tr>
-                            <th>Username</th>
+                            <th>Email</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
                             <tr key={index}>
-                                <td>{user.username}</td>
+                                <td>{user.email}</td>
                                 <td>
-                                    <button className="action-button delete">Delete</button>
+                                    <button className="action-button delete-user" onClick={() => deleteUser(index)}>Delete User</button>
                                 </td>
                             </tr>
                         ))}
